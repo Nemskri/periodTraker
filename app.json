@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "periodTracker",
+    "slug": "periodTracker",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "periodTracker"
+}

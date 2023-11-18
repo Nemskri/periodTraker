@@ -1,2 +1,0 @@
-# periodTraker
-React Native
