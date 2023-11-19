@@ -90,10 +90,10 @@ function User({ navigation }) {
 
   return (
     <ImageBackground
-      source={require("../assets/images/bgP.jpg")}
+      source={require("../assets/images/bgL.jpg")}
       style={styles.background}
     >
-      <StatusBar barStyle="light-content" backgroundColor={primaryDark} />
+      <StatusBar barStyle="dark-content" backgroundColor={primaryLight} />
       <SafeAreaView style={styles.container}>
         <ImageBackground
           source={require("../assets/images/user.jpg")}

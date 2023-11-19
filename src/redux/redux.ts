@@ -17,6 +17,10 @@ export interface userDataType {
   tempReminder: string;
 }
 
+export interface periodDataType {
+  lastPeriodDate: string;
+}
+
 const slice = createSlice({
   name: "state",
   initialState: {
@@ -26,6 +30,9 @@ const slice = createSlice({
       age: 0,
       tempReminder: "",
     } as userDataType,
+    periodData: {
+      lastPeriodDate: null,
+    } as periodDataType,
   },
   reducers: {
     setNewUser: (state, action) => {
@@ -43,6 +50,12 @@ const slice = createSlice({
         age: 0,
         tempReminder: "",
       };
+      state.periodData = {
+        lastPeriodDate: null,
+      };
+    },
+    setPeriodData: (state, action) => {
+      state.periodData = { ...state.periodData, ...action.payload };
     },
   },
 });
@@ -54,7 +67,7 @@ const asyncConfig = {
 
 const persistedReducer = persistReducer(asyncConfig, slice.reducer);
 
-export const { setUserData, deleteUserData } = slice.actions;
+export const { setUserData, deleteUserData, setPeriodData } = slice.actions;
 
 const store = configureStore({
   reducer: persistedReducer,
