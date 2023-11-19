@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import {
@@ -16,9 +15,24 @@ import {
 } from "react-native-responsive-screen";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { primaryDark, userTitle } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserData, userDataType } from "../redux/redux";
+import Button from "../components/common/button";
+import { deleteUserData, setUserData, userDataType } from "../redux/redux";
+import {
+  emptyAgeMessage,
+  emptyNameMessage,
+  loginMessage,
+  logoutMessage,
+  messageTime,
+  primaryDanger,
+  primaryDark,
+  secondaryLight,
+  userDelete,
+  userFormLabelAge,
+  userFormLabelName,
+  userSubmitBtn,
+  userTitle,
+} from "../utils/constants";
 
 function User() {
   type RootState = {
@@ -26,83 +40,128 @@ function User() {
   };
 
   const [username, setUserName] = useState("");
-  const [age, setAge] = useState(18);
+  const [age, setAge] = useState(0);
+  const [eventObj, setEventObj] = useState({
+    message: "",
+    status: 0,
+  });
 
-  const userData = useSelector((state: RootState) => state.userData);
+  let userData = useSelector((state: RootState) => state.userData);
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
+    if (username.length === 0 || age < 12 || age > 100) {
+      setEventObj({
+        message:
+          username.length === 0
+            ? emptyNameMessage
+            : (age < 12 || age > 100) && emptyAgeMessage,
+        status: 400,
+      });
+      return;
+    }
     dispatch(setUserData({ userName: username, age: age }));
+    setEventObj({
+      message: `${loginMessage} ${username}.`,
+      status: 200,
+    });
   };
+
+  const deleteUser = () => {
+    dispatch(deleteUserData());
+    setEventObj({
+      message: `${logoutMessage} ${userData.userName}!`,
+      status: 400,
+    });
+    setAge(0);
+    setUserName("");
+  };
+
+  useEffect(() => {
+    eventObj.status !== 0 &&
+      setTimeout(() => {
+        setEventObj({
+          message: "",
+          status: 0,
+        });
+      }, messageTime);
+  }, [eventObj.status]);
 
   return (
     <ImageBackground
       source={require("../assets/images/bgP.jpg")}
-      height={hp(100)}
+      style={styles.background}
     >
       <StatusBar barStyle="light-content" backgroundColor={primaryDark} />
-      <SafeAreaView style={{ height: hp(100) }}>
+      <SafeAreaView style={styles.container}>
         <ImageBackground
           source={require("../assets/images/user.jpg")}
-          height={hp(50)}
+          style={styles.headerContainer}
         >
-          <View style={{ height: hp(40), width: wp(100) }}>
-            <Text
-              style={{
-                position: "absolute",
-                bottom: 0,
-                padding: hp(1),
-                fontSize: hp(3),
-                color: primaryDark,
-              }}
-            >
-              {userTitle} {userData.userName && `, ${userData.userName}`}
-            </Text>
-          </View>
+          <Text style={styles.headerText}>
+            {userTitle}
+            {userData.userName.length !== 0 &&
+              ` Back, \n ${userData?.userName}`}
+          </Text>
         </ImageBackground>
         <KeyboardAwareScrollView
-          contentContainerStyle={styles.form}
+          contentContainerStyle={styles.formContainer}
           extraScrollHeight={230}
           scrollEnabled={true}
           enableAutomaticScroll={Platform.OS === "ios"}
           keyboardOpeningTime={250}
         >
-          <View
-            style={{
-              display: "flex",
-              rowGap: hp(5),
-            }}
-          >
+          <View style={styles.formContainer}>
             <View>
-              <Text style={styles.label}>My Name:</Text>
+              <Text style={styles.label}>{userFormLabelName} :</Text>
               <TextInput
                 style={styles.input}
                 onChangeText={(e) => setUserName(e)}
-                // value={userName}
-                // placeholder={userData.userName || "Name"}
+                placeholder={
+                  userData?.userName.length === 0
+                    ? `${userFormLabelName} is...`
+                    : userData.userName
+                }
+                placeholderTextColor={secondaryLight}
+                editable={!(userData.age > 0 && userData.userName.length > 0)}
               />
             </View>
             <View>
-              <Text style={styles.label}>MY Age:</Text>
+              <Text style={styles.label}>{userFormLabelAge} :</Text>
               <TextInput
                 style={styles.input}
                 inputMode="numeric"
                 onChangeText={(e) => setAge(+e)}
-                // value={bankAccount}
-                // placeholder={userData.bankAccount || "Bank Account Name/No."}
+                editable={!(userData.age === 0 && userData.userName.length > 0)}
+                placeholder={
+                  userData.age === 0
+                    ? `${userFormLabelAge} is...`
+                    : `${userData.age.toString()} years`
+                }
+                placeholderTextColor={secondaryLight}
               />
             </View>
           </View>
-          <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-            <Text
-              style={{
-                color: primaryDark,
-                fontSize: wp(6),
-              }}
-            >
-              SUBMIT
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            {userData.age > 0 && userData.userName.length > 0 ? (
+              <Button
+                onClick={deleteUser}
+                bg={primaryDanger}
+                textColor={secondaryLight}
+                text={userDelete}
+              />
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                bg={secondaryLight}
+                textColor={primaryDark}
+                text={userSubmitBtn}
+              />
+            )}
+            {eventObj.status !== 0 && (
+              <Text style={styles.eventText}>{eventObj.message}</Text>
+            )}
+          </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>
     </ImageBackground>
@@ -112,9 +171,26 @@ function User() {
 export default User;
 
 const styles = StyleSheet.create({
-  form: {
-    // backgroundColor: "#9a0b4e",
-    // height: hp(88),
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  headerContainer: {
+    height: hp(40),
+    width: wp(100),
+  },
+  headerText: {
+    position: "absolute",
+    bottom: 0,
+    padding: hp(1),
+    fontSize: hp(3),
+    fontWeight: "600",
+    color: primaryDark,
+  },
+  formContainer: {
+    height: hp(88),
     padding: wp(5),
     display: "flex",
     justifyContent: "flex-start",
@@ -132,12 +208,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: hp(0.2),
     borderBottomColor: "white",
   },
-  submitBtn: {
-    backgroundColor: "white",
-    paddingVertical: wp(1),
-    borderRadius: wp(10),
-    alignSelf: "center",
-    width: wp(40),
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "center",
     alignItems: "center",
+    rowGap: hp(2),
+  },
+  eventText: {
+    color: secondaryLight,
+    fontSize: hp(3),
+    width: wp(100),
+    textAlign: "center",
   },
 });

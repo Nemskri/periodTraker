@@ -21,7 +21,11 @@ const slice = createSlice({
   name: "state",
   initialState: {
     newUser: true as boolean,
-    userData: {} as userDataType,
+    userData: {
+      userName: "",
+      age: 0,
+      tempReminder: "",
+    } as userDataType,
   },
   reducers: {
     setNewUser: (state, action) => {
@@ -31,6 +35,13 @@ const slice = createSlice({
       state.userData = {
         ...state.userData,
         ...action.payload,
+      };
+    },
+    deleteUserData: (state) => {
+      state.userData = {
+        userName: "",
+        age: 0,
+        tempReminder: "",
       };
     },
   },
@@ -43,7 +54,7 @@ const asyncConfig = {
 
 const persistedReducer = persistReducer(asyncConfig, slice.reducer);
 
-export const { setUserData } = slice.actions;
+export const { setUserData, deleteUserData } = slice.actions;
 
 const store = configureStore({
   reducer: persistedReducer,
