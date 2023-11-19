@@ -31,12 +31,12 @@ function Tab() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused }) => {
           let iconSource: ImageSourcePropType;
-          if (route.name === "Home") {
-            iconSource = require("../assets/icons/Home.png");
-          } else if (route.name === "Settings") {
+          if (route.name === "Me") {
+            iconSource = require("../assets/icons/user.png");
+          } else if (route.name === "Cycles") {
             iconSource = require("../assets/icons/SettingsIcon.png");
           } else {
-            iconSource = require("../assets/icons/InsightsIcon.png");
+            iconSource = require("../assets/icons/calendar.png");
           }
           return (
             <View
@@ -49,8 +49,8 @@ function Tab() {
             >
               <Image
                 style={{
-                  width: wp(7),
-                  height: wp(7),
+                  width: route.name === "Me" ? wp(11) : wp(7),
+                  height: route.name === "Me" ? wp(11) : wp(7),
                   tintColor: focused ? "#9a0b4e" : "#B2BEB5",
                 }}
                 source={iconSource}

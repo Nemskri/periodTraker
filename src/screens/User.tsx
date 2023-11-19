@@ -26,6 +26,7 @@ import {
   messageTime,
   primaryDanger,
   primaryDark,
+  primaryLight,
   secondaryLight,
   userDelete,
   userFormLabelAge,
@@ -34,7 +35,7 @@ import {
   userTitle,
 } from "../utils/constants";
 
-function User() {
+function User({ navigation }) {
   type RootState = {
     userData: userDataType;
   };
@@ -188,10 +189,11 @@ const styles = StyleSheet.create({
     fontSize: hp(3),
     fontWeight: "600",
     color: primaryDark,
+    backgroundColor: primaryLight,
+    borderTopRightRadius: wp(4),
   },
   formContainer: {
-    height: hp(88),
-    padding: wp(5),
+    padding: wp(2),
     display: "flex",
     justifyContent: "flex-start",
     rowGap: wp(10),
