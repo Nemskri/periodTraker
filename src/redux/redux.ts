@@ -13,49 +13,25 @@ import {
 
 export interface userDataType {
   userName: string;
-  bankAccount: string;
-  currentBalance: number;
-  income: number;
+  age: number;
+  tempReminder: string;
 }
 
 const slice = createSlice({
   name: "state",
   initialState: {
-    pin: null as string | null,
     newUser: true as boolean,
     userData: {} as userDataType,
   },
   reducers: {
-    storePin: (state, action) => {
-      state.pin = action.payload;
-    },
-    clearPin: (state) => {
-      state.pin = null;
-    },
-    killStore: (state) => {
-      state.pin = null;
-      state.newUser = true;
-      state.userData = {
-        userName: "",
-        bankAccount: "",
-        currentBalance: 0,
-        income: 0,
-      };
-    },
-    setNewuser: (state, action) => {
+    setNewUser: (state, action) => {
       state.newUser = action.payload;
     },
-    UserName: (state, action) => {
-      state.userData.userName = action.payload;
-    },
-    BankAccount: (state, action) => {
-      state.userData.bankAccount = action.payload;
-    },
-    CurrentBalance: (state, action) => {
-      state.userData.currentBalance = action.payload;
-    },
-    Income: (state, action) => {
-      state.userData.income = action.payload;
+    setUserData: (state, action) => {
+      state.userData = {
+        ...state.userData,
+        ...action.payload,
+      };
     },
   },
 });
@@ -67,16 +43,7 @@ const asyncConfig = {
 
 const persistedReducer = persistReducer(asyncConfig, slice.reducer);
 
-export const {
-  storePin,
-  killStore,
-  clearPin,
-  setNewuser,
-  UserName,
-  BankAccount,
-  CurrentBalance,
-  Income,
-} = slice.actions;
+export const { setUserData } = slice.actions;
 
 const store = configureStore({
   reducer: persistedReducer,

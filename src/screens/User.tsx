@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
   ImageBackground,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
   heightPercentageToDP as hp,
@@ -16,13 +16,23 @@ import {
 } from "react-native-responsive-screen";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { primaryDark, userTitle } from "../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData, userDataType } from "../redux/redux";
 
 function User() {
+  type RootState = {
+    userData: userDataType;
+  };
+
   const [username, setUserName] = useState("");
   const [age, setAge] = useState(18);
 
+  const userData = useSelector((state: RootState) => state.userData);
+  const dispatch = useDispatch();
+
   const handleSubmit = () => {
-    console.log({ age, username });
+    dispatch(setUserData({ userName: username, age: age }));
   };
 
   return (
@@ -30,6 +40,7 @@ function User() {
       source={require("../assets/images/bgP.jpg")}
       height={hp(100)}
     >
+      <StatusBar barStyle="light-content" backgroundColor={primaryDark} />
       <SafeAreaView style={{ height: hp(100) }}>
         <ImageBackground
           source={require("../assets/images/user.jpg")}
@@ -42,20 +53,19 @@ function User() {
                 bottom: 0,
                 padding: hp(1),
                 fontSize: hp(3),
-                color: "#9a0b4e",
+                color: primaryDark,
               }}
             >
-              Welcome
+              {userTitle} {userData.userName && `, ${userData.userName}`}
             </Text>
           </View>
         </ImageBackground>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.form}
-          resetScrollToCoords={{ x: 0, y: 0 }}
+          extraScrollHeight={230}
           scrollEnabled={true}
-          enableOnAndroid={true}
           enableAutomaticScroll={Platform.OS === "ios"}
-          keyboardOpeningTime={0}
+          keyboardOpeningTime={250}
         >
           <View
             style={{
@@ -67,9 +77,7 @@ function User() {
               <Text style={styles.label}>My Name:</Text>
               <TextInput
                 style={styles.input}
-                onChangeText={(e) => (
-                  setUserName(e), console.log({ username })
-                )}
+                onChangeText={(e) => setUserName(e)}
                 // value={userName}
                 // placeholder={userData.userName || "Name"}
               />
@@ -78,7 +86,8 @@ function User() {
               <Text style={styles.label}>MY Age:</Text>
               <TextInput
                 style={styles.input}
-                onChangeText={(e) => (setAge(+e), console.log({ age }))}
+                inputMode="numeric"
+                onChangeText={(e) => setAge(+e)}
                 // value={bankAccount}
                 // placeholder={userData.bankAccount || "Bank Account Name/No."}
               />
@@ -87,7 +96,7 @@ function User() {
           <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
             <Text
               style={{
-                color: "#9a0b4e",
+                color: primaryDark,
                 fontSize: wp(6),
               }}
             >
@@ -105,7 +114,7 @@ export default User;
 const styles = StyleSheet.create({
   form: {
     // backgroundColor: "#9a0b4e",
-    height: hp(88),
+    // height: hp(88),
     padding: wp(5),
     display: "flex",
     justifyContent: "flex-start",

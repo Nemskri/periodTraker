@@ -15,6 +15,7 @@ import { userDataType } from "../redux/redux";
 import Calendar from "../screens/Calendar";
 import Cycles from "../screens/Cycles";
 import User from "../screens/User";
+import { primaryDark } from "../utils/constants";
 
 function Tab() {
   type RootState = {
@@ -70,7 +71,7 @@ function Tab() {
           paddingBottom: hp(1),
           fontWeight: "800",
         },
-        tabBarActiveTintColor: "#9a0b4e",
+        tabBarActiveTintColor: primaryDark,
         tabBarInactiveTintColor: "white",
       })}
     >
